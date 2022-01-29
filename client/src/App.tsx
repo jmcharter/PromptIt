@@ -35,7 +35,7 @@ const App = () => {
 
     return (
         <>
-            <Header pages={['Signup', 'Login', 'Profile']} />
+            <Header pages={['Profile']} />
             <Routes>
                 <Route path="/" element={<Profile />} />
                 <Route path="signup" element={<Signup />} />
