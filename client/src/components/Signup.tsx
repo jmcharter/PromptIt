@@ -14,20 +14,30 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { registerUser } from "../api";
 import validator from 'validator';
 import { AxiosResponse } from "axios";
-
-
+import { useAuth } from "../contexts/AuthContext";
+import { UserData } from "../models/DataModels";
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
-    username: string;
+    displayName: string;
     email: string;
     password: string;
     confirmPassword: string;
 }
 
+interface SignupResponse {
+    userdata: UserData;
+    token: string;
+    message?: string;
+}
+
 const Signup = () => {
-    const [formData, setFormData] = useState<FormData>({ username: "", email: "", password: "", confirmPassword: "" });
+    const [formData, setFormData] = useState<FormData>({ displayName: "", email: "", password: "", confirmPassword: "" });
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+    const { currentUser, setCurrentUser } = useAuth();
+    const navigate = useNavigate();
 
     const handleChange = (event: any) => {
         setFormData({
@@ -39,8 +49,6 @@ const Signup = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        console.log(formData);
-
         if (!validator.isEmail(formData.email)) {
             return setError("Please enter a valid email address.");
         }
@@ -50,9 +58,18 @@ const Signup = () => {
 
         try {
             setError("");
+            setSuccess("");
             setLoading(true);
-            const res: AxiosResponse<Response> = await registerUser(formData);
-            console.log(res.data);
+            const res: AxiosResponse<SignupResponse> = await registerUser(formData);
+            if (res.data.userdata) {
+                setSuccess(`Registration for ${formData.displayName} complete`);
+                setCurrentUser(res.data.userdata);
+            } else {
+                setError(res.data.message as string);
+            }
+            setFormData({ displayName: "", email: "", password: "", confirmPassword: "" });
+            localStorage.setItem("access-token", res.data.token);
+            navigate("/");
         } catch (error: any) {
             setError(error.response.data.message);
         }
@@ -75,6 +92,7 @@ const Signup = () => {
                     component="h1" variant="h5"
                 >Sign Up</Typography>
                 {error && <Alert severity="error" variant="filled" sx={{ mt: 2 }}>{error}</Alert>}
+                {success && <Alert severity="success" variant="filled" sx={{ mt: 2 }}>{success}</Alert>}
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <TextField
                         onChange={handleChange}
@@ -86,6 +104,7 @@ const Signup = () => {
                         name="displayName"
                         autoFocus
                         sx={{}}
+                        value={formData.displayName}
                     />
                     <TextField
                         onChange={handleChange}
@@ -97,6 +116,7 @@ const Signup = () => {
                         name="email"
                         autoComplete="email"
                         type="email"
+                        value={formData.email}
                     />
                     <TextField
                         onChange={handleChange}
@@ -108,6 +128,7 @@ const Signup = () => {
                         name="password"
                         autoComplete="current-password"
                         type="password"
+                        value={formData.password}
                     />
                     <TextField
                         onChange={handleChange}
@@ -119,6 +140,7 @@ const Signup = () => {
                         name="confirmPassword"
                         autoComplete="current-password"
                         type="password"
+                        value={formData.confirmPassword}
                     />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
