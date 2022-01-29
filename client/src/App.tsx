@@ -1,22 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import TestButton from './components/TestButton';
-import Signup from './components/Signup';
-// import { Container, AppBar, Typography, Grow, Grid, ButtonGroup, Button } from '@material-ui/core';
+import React, { createContext, useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { loginUser, validateToken } from './api';
 
 import Header from './components/Header';
+import Signup from './components/Signup';
+import Login from './components/Login';
+import Profile from './components/Profile';
+import { AxiosResponse } from 'axios';
+import { ValidateResponse } from './models/ResponseModels';
 
-var pages = ['Home', 'Popular', 'About'];
+
 
 const App = () => {
+    const { currentUser, setCurrentUser } = useAuth();
+    const getUserDetails = async () => {
+        const token = localStorage.getItem("access-token");
+        try {
+            if (token) {
+                const res: AxiosResponse<ValidateResponse> = await validateToken(token);
+                if (res) {
+                    console.log(res);
+                    setCurrentUser(res.data.userdata);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-    // const [loggedIn, setLoggedIn] = useState<boolean>(false);
+    useEffect(() => {
+        getUserDetails();
+    }, []);
 
     return (
         <>
-            {/* <Header pages={pages} loggedIn={loggedIn} />
-            <TestButton type="submit">Hello</TestButton> */}
-            <Signup />
+            <Header pages={['Signup', 'Login', 'Profile']} />
+            <Routes>
+                <Route path="/" element={<Profile />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="login" element={<Login />} />
+                <Route path="profile" element={<Profile />} />
+            </Routes>
         </>
+
+
     );
 };
 
