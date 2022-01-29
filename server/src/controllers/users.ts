@@ -39,7 +39,8 @@ export const createUser = async (req: Request, res: Response) => {
         const newUser = new User({ ...body, username: username, password: passwordHash });
         await newUser.save();
         const token = generateAccessToken(username);
-        res.status(201).json({ newUser, token });
+        const userDetails = { username, displayName, email };
+        res.status(201).json({ userdata: userDetails, token });
     } catch (error: any) {
         res.status(409).json({ message: error.name });
         console.log(error.message);
@@ -48,25 +49,49 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const user = await User.findOne({
-            $or: [
-                { username: username },
-                { email: email }
-            ]
-        });
+        const user = await User.findOne({ username: username.toLowerCase() });
         if (!user) {
-            return res.status(200).json({ "message": "Login details incorrect" });
+            return res.status(200).json({ "message": "user not found" });
         }
-        const isPasswordValid = await argon2.verify(password, user.password);
+        const isPasswordValid = await argon2.verify(user.password, password);
         if (!isPasswordValid) {
             return res.status(200).json({ "message": "Login details incorrect" });
         }
+        const displayName = user.displayName;
+        const email = user.email;
+        const userdata = { username, displayName, email };
+
         const token = generateAccessToken(user.username);
-        res.status(200).json({ user: user, token });
+        res.status(200).json({ userdata, token });
 
     } catch (error: any) {
         res.status(500).json({ message: error.name });
+    }
+};
+
+export const getUser = async (req: any, res: Response) => {
+    try {
+        const { username } = req.user;
+        const user = await User.findOne({ username });
+
+        res.status(200).json({ username: user?.username, displayName: user?.displayName, email: user?.email });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const validateUserToken = async (req: Request, res: Response) => {
+    const { token } = req.body;
+    console.log(req.body);
+    if (token) {
+        jwt.verify(token, process.env.TOKEN_SECRET as string, async (err: any, user: any) => {
+            if (err) return;
+            const { username } = user;
+            const validatedUser = await User.findOne({ username });
+            console.log(validatedUser);
+            res.status(200).json({ userdata: { username: validatedUser?.username, displayName: validatedUser?.displayName, email: validatedUser?.email } });
+        });
     }
 };
