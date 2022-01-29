@@ -2,31 +2,37 @@ import { Container, AppBar, ButtonGroup, Button, Toolbar, Box, IconButton, MenuI
 import MenuIcon from '@mui/icons-material/Menu';
 import Menu from '@mui/material/Menu';
 import { Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 
 interface Props {
     pages: string[];
-    loggedIn: boolean;
 }
 
 const loginOrRegisterBtns = (
     <ButtonGroup variant="contained">
         <Button
-            color="default"
+            color="primary"
             variant="contained"
-        >
-            Login
+            component={Link}
+            to="/login">Login
         </Button>
-        <Button color="secondary" variant="contained">
+        <Button
+            color="secondary"
+            variant="contained"
+            component={Link}
+            to="signup">
             Register
         </Button>
     </ButtonGroup>
 );
 
-const Header: React.FC<Props> = ({ pages, loggedIn }) => {
+const Header: React.FC<Props> = ({ pages }) => {
 
     const [navAnchor, setNavAnchor] = useState<null | HTMLElement>(null);
+    const { currentUser, setCurrentUser } = useAuth();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setNavAnchor(event.currentTarget);
@@ -71,7 +77,8 @@ const Header: React.FC<Props> = ({ pages, loggedIn }) => {
                                 {pages.map((page) => (
                                     <MenuItem
                                         key={page}
-                                        onClick={handleCloseNavMenu}
+                                        component={Link}
+                                        to={"/" + page.toLowerCase()}
                                     >
                                         <Typography align="center">{page}</Typography>
                                     </MenuItem>
@@ -89,19 +96,19 @@ const Header: React.FC<Props> = ({ pages, loggedIn }) => {
                         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
                                 <Button
-                                    color="inherit">
+                                    key={page}
+                                    color="inherit"
+                                    component={Link}
+                                    to={page.toLowerCase()}
+                                >
                                     {page}
                                 </Button>
                             ))}
                         </Box>
                         <Box sx={{ flexGrow: 0 }}>
-                            {loggedIn ? null : loginOrRegisterBtns}
+                            {currentUser.username.length ? null : loginOrRegisterBtns}
                         </Box>
                     </Toolbar>
-                    {/* <ButtonGroup variant="contained">
-                            <Button color="primary" variant="contained">Login</Button>
-                            <Button color="secondary" variant="contained">Register</Button>
-                        </ButtonGroup> */}
                 </Container>
             </AppBar>
         </header >
