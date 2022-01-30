@@ -52,11 +52,11 @@ function Login(): ReactElement {
                 setSuccess(`Logged in as ${formData.username}`);
                 setCurrentUser(res.data.userdata);
                 navigate("/");
+                localStorage.setItem("access-token", res.data.token);
             } else {
                 setError(res.data.message as string);
             }
             setFormData({ username: "", email: "", password: "", confirmPassword: "" });
-            localStorage.setItem("access-token", res.data.token);
         } catch (error: any) {
             setError(error.response.data.message);
         }
