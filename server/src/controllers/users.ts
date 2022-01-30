@@ -39,7 +39,7 @@ export const createUser = async (req: Request, res: Response) => {
         const newUser = new User({ ...body, username: username, password: passwordHash });
         await newUser.save();
         const token = generateAccessToken(username);
-        const userDetails = { username, displayName, email };
+        const userDetails = { username, displayName, email, id: newUser._id };
         res.status(201).json({ userdata: userDetails, token });
     } catch (error: any) {
         res.status(409).json({ message: error.name });
@@ -61,7 +61,7 @@ export const loginUser = async (req: Request, res: Response) => {
         }
         const displayName = user.displayName;
         const email = user.email;
-        const userdata = { username, displayName, email };
+        const userdata = { username, displayName, email, id: user._id };
 
         const token = generateAccessToken(user.username);
         res.status(200).json({ userdata, token });
@@ -94,4 +94,19 @@ export const validateUserToken = async (req: Request, res: Response) => {
             res.status(200).json({ userdata: { username: validatedUser?.username, displayName: validatedUser?.displayName, email: validatedUser?.email } });
         });
     }
+};
+
+export const getUserPrompts = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const user = await User
+            .findById(id)
+            .where("remove")
+            .in([false])
+            .populate("prompts");
+        res.status(200).json({ prompts: user.prompts });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+
 };
