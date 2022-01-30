@@ -51,8 +51,9 @@ function Login(): ReactElement {
             if (res.data.userdata) {
                 setSuccess(`Logged in as ${formData.username}`);
                 setCurrentUser(res.data.userdata);
-                navigate("/");
                 localStorage.setItem("access-token", res.data.token);
+                localStorage.setItem("user-data", JSON.stringify(res.data.userdata));
+                navigate("/");
             } else {
                 setError(res.data.message as string);
             }
