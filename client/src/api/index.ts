@@ -20,7 +20,10 @@ api.interceptors.request.use(config => {
 
 export const registerUser = async (data: Object) => await api.post('/users/register', data);
 export const loginUser = async (data: Object) => await api.post('/users/login', data);
-export const logoutUser = () => localStorage.removeItem("token");
+export const logoutUser = () => {
+    localStorage.removeItem("access-token");
+    localStorage.removeItem("user-data");
+};
 
 export const validateToken = async (token: String) => await api.post('/users/validateusertoken', { token });
 export const getUser = async () => await api.get('/users/profile');
