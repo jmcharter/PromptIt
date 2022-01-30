@@ -28,7 +28,6 @@ const Header: React.FC<Props> = ({ pages }) => {
     const handleLogout = () => {
         logoutUser();
         setCurrentUser({ displayName: "", username: "", email: "" });
-        localStorage.removeItem("access-token");
 
     };
 
