@@ -1,7 +1,7 @@
 import { Schema, model, ObjectId } from 'mongoose';
 
 interface Prompt {
-    name: string;
+    title: string;
     text: string;
     createdBy: ObjectId;
     createdOn: Date;
@@ -11,7 +11,7 @@ interface Prompt {
 }
 
 const userSchema = new Schema<Prompt>({
-    name: {
+    title: {
         type: String,
         required: true,
         trim: true,
