@@ -4,6 +4,7 @@ import cors from 'cors';
 import 'dotenv/config';
 
 import userRoutes from './routes/users';
+import promptRoutes from './routes/prompts';
 
 const app: Application = express();
 
@@ -13,6 +14,7 @@ app.use(express.json({ limit: "30mb" }));
 app.use(cors());
 
 app.use('/users', userRoutes);
+app.use('/prompts', promptRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     console.log("Hello, world");
