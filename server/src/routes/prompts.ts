@@ -5,7 +5,7 @@ import authorize from '../middleware/authorization';
 
 const router: express.Router = express.Router();
 
-// routes for /users/..
+// routes for /prompts/..
 router.get('/', getPrompts);
 router.post('/create', createPrompt);
 
