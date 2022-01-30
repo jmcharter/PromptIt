@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, ObjectId } from 'mongoose';
 
 interface User {
     username: string;
@@ -7,6 +7,7 @@ interface User {
     password: string;
     createdOn: Date;
     lastAccessed: Date;
+    prompts: [ObjectId];
 }
 
 const userSchema = new Schema<User>({
@@ -32,7 +33,10 @@ const userSchema = new Schema<User>({
     },
     password: { type: String, required: true },
     createdOn: { type: Date, default: new Date() },
-    lastAccessed: { type: Date, default: new Date() }
+    lastAccessed: { type: Date, default: new Date() },
+    prompts: [
+        { type: Schema.Types.ObjectId, ref: 'Prompt' }
+    ]
 });
 
 const UserModel = model<User>('User', userSchema);
