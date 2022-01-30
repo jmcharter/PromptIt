@@ -69,6 +69,7 @@ const Signup = () => {
             }
             setFormData({ displayName: "", email: "", password: "", confirmPassword: "" });
             localStorage.setItem("access-token", res.data.token);
+            localStorage.setItem("user-data", JSON.stringify(res.data.userdata));
             navigate("/");
         } catch (error: any) {
             setError(error.response.data.message);
