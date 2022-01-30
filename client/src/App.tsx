@@ -7,6 +7,7 @@ import Header from './components/Header';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import Profile from './components/Profile';
+import Prompts from './components/Prompts';
 import { AxiosResponse } from 'axios';
 import { ValidateResponse } from './models/ResponseModels';
 
@@ -35,12 +36,13 @@ const App = () => {
 
     return (
         <>
-            <Header pages={['Profile']} />
+            <Header pages={['Profile', 'Prompts']} />
             <Routes>
                 <Route path="/" element={<Profile />} />
                 <Route path="signup" element={<Signup />} />
                 <Route path="login" element={<Login />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="prompts" element={<Prompts />} />
             </Routes>
         </>
 
