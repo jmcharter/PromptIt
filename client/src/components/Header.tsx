@@ -5,29 +5,12 @@ import { Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { logoutUser } from '../api';
 
 
 interface Props {
     pages: string[];
 }
-
-const loginOrRegisterBtns = (
-    <ButtonGroup variant="contained">
-        <Button
-            color="primary"
-            variant="contained"
-            component={Link}
-            to="/login">Login
-        </Button>
-        <Button
-            color="secondary"
-            variant="contained"
-            component={Link}
-            to="signup">
-            Register
-        </Button>
-    </ButtonGroup>
-);
 
 const Header: React.FC<Props> = ({ pages }) => {
 
@@ -41,6 +24,43 @@ const Header: React.FC<Props> = ({ pages }) => {
     const handleCloseNavMenu = () => {
         setNavAnchor(null);
     };
+
+    const handleLogout = () => {
+        logoutUser();
+        setCurrentUser({ displayName: "", username: "", email: "" });
+        localStorage.removeItem("access-token");
+
+    };
+
+    const loginOrRegisterBtns = (
+        <ButtonGroup variant="contained">
+            <Button
+                color="primary"
+                variant="contained"
+                component={Link}
+                to="/login">Login
+            </Button>
+            <Button
+                color="secondary"
+                variant="contained"
+                component={Link}
+                to="signup">
+                Register
+            </Button>
+        </ButtonGroup>
+    );
+
+    const logoutBtn = (
+        <Button
+            onClick={handleLogout}
+            color="secondary"
+            variant="contained"
+            component={Link}
+            to="/index"
+        >
+            Logout
+        </Button>
+    );
 
     return (
         <header>
@@ -106,7 +126,7 @@ const Header: React.FC<Props> = ({ pages }) => {
                             ))}
                         </Box>
                         <Box sx={{ flexGrow: 0 }}>
-                            {currentUser.username.length ? null : loginOrRegisterBtns}
+                            {currentUser.username.length ? logoutBtn : loginOrRegisterBtns}
                         </Box>
                     </Toolbar>
                 </Container>
