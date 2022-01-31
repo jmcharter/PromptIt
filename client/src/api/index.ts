@@ -28,6 +28,7 @@ export const logoutUser = () => {
 export const validateToken = async (token: String) => await api.post('/users/validateusertoken', { token });
 export const getUser = async () => await api.get('/users/profile');
 
+export const getPrompts = async () => await api.get('/prompts');
 
 export const isAuthenticated = () => {
     return localStorage.getItem("access-token");
