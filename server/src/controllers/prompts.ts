@@ -5,7 +5,7 @@ import User from "../models/user";
 
 export const getPrompts = async (req: Request, res: Response) => {
     try {
-        const prompts = await Prompt.find().populate('createdBy');
+        const prompts = await Prompt.find().populate('createdBy', 'username displayName');
         res.status(200).json(prompts);
     } catch (error: any) {
         res.status(404).json({ message: error.message });
